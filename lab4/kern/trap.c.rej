@@ -1,0 +1,23 @@
+--- kern/trap.c	2007-09-25 09:11:29.000000000 +0800
++++ kern/trap.c	2014-01-08 21:14:36.134638434 +0800
+@@ -156,7 +201,19 @@
+ {
+ 	// Handle processor exceptions.
+ 	// LAB 3: Your code here.
+-	
++	if(tf->tf_trapno == T_SYSCALL){
++		tf->tf_regs.reg_eax = syscall(tf->tf_regs.reg_eax, tf->tf_regs.reg_edx,tf->tf_regs.reg_ecx,tf->tf_regs.reg_ebx, tf->tf_regs.reg_edi, tf->tf_regs.reg_esi);
++		
++	 	return ;
++	}
++	if(tf->tf_trapno == T_PGFLT){
++		page_fault_handler(tf);
++		return ;
++	}
++	if(tf->tf_trapno == T_BRKPT){
++		monitor(tf);
++		return ;
++	}
+ 
+ 	// Unexpected trap: The user process or the kernel has a bug.
+ 	print_trapframe(tf);
